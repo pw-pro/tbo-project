@@ -132,7 +132,7 @@ jobs:
             echo "TAG=latest" >> $GITHUB_ENV
           else
             BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g')
-            echo "TAG=debug-${BRANCH_NAME}" >> $GITHUB_ENV
+            echo "TAG=beta-${BRANCH_NAME}" >> $GITHUB_ENV
           fi
 
       - name: Tag and push Docker image to GHCR
