@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Polsl\UserInterface\Cli;
 
+use Doctrine\DBAL\Connection;
 use Polsl\Application\Command\SellSnack\SellSnack;
 use Polsl\Domain\Model\Machine\SnackPosition;
 use Polsl\Packages\MessageBus\Contracts\CommandBusInterface;
@@ -14,8 +15,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class SellSnackCommand extends Command
 {
-    public function __construct(private readonly CommandBusInterface $commandBus)
-    {
+    public function __construct(
+        private CommandBusInterface $commandBus,
+        private Connection $dbConnection,
+    ) {
         parent::__construct('app:snacks:sell');
     }
 
@@ -34,6 +37,12 @@ final class SellSnackCommand extends Command
         $machineId = $input->getArgument('machineId');
         $snackId = $input->getArgument('snackId');
         $position = $input->getArgument('position');
+
+        $this->dbConnection
+            ->executeQuery(
+                "SELECT * FROM machines WHERE id = {$machineId}",
+            )
+        ;
 
         if (!\is_numeric($machineId) || !\is_numeric($snackId)) {
             $output->writeln('<error>MachineId or SnackId is not numeric</error>');
